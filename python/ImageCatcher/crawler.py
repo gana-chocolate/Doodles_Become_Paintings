@@ -7,14 +7,17 @@ from icrawler.builtin import GoogleImageCrawler
 #https://www.google.com/search?q=[검색어]&source=lnms&tbm=isch&sa=X&dpr=2&sourch=Int&tbs=sur:fc
 #재사용가능 라이센스 구글 이미지 스크립트.
 
-""" google_crawler = GoogleImageCrawler(parser_threads=2, downloader_threads=4,
-                                    storage={'root_dir': 'car3'})
-google_crawler.crawl(keyword='kia car', max_num=500,
-                     min_size=(200,200), max_size=None) # keyword:검색어 / min_size 70x70이상 논문 권장 """
+google_crawler = GoogleImageCrawler(parser_threads=2, downloader_threads=4,
+                                    storage={'root_dir': 'car'})
 
+filters = dict(license='commercial,modify')
+
+google_crawler.crawl(keyword='car', filters=filters, max_num=100,
+                     min_size=(200,200), max_size=None)
+"""
 count = 2000
 inputSearch = "car"
-base_url = "https://www.google.com/search?q=[검색어]&source=lnms" \
+base_url = "https://www.google.co.kr/search?biw=1597&bih=925&" \
            "tbm=isch&sa=1&btnG=%EA%B2%80%EC%83%89&q=" + inputSearch
 
 def img_url_from_page(url):
@@ -38,9 +41,6 @@ def img_from_url(image_names):
 
     urllib.request.urlretrieve(image_names, full_name)
 
-
-for i in img_url_from_page(base_url):
-    img_from_url(i)
 
 for i in img_url_from_page(base_url):
     img_from_url(i) """
