@@ -10,7 +10,7 @@ from icrawler.builtin import GoogleImageCrawler
 google_crawler = GoogleImageCrawler(parser_threads=2, downloader_threads=4,
                                     storage={'root_dir': 'car'})
 
-filters = dict(license='noncommercial,modify')
+filters = dict(license='commercial,modify')
 
 google_crawler.crawl(keyword='car', filters=filters, max_num=100,
                      min_size=(200,200), max_size=None)
