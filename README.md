@@ -1,21 +1,4 @@
 # Doodles_Become_Paintings
 
-################################################
-
-모든 진행 사항은 추가함과 동시에 아래의 형식에 따라서 추가합니다.
-
-날짜(Hour까지만) : 
-
-|| 이름 : 
-
-|| 추가되거나 변경되는 내용이 들어있는 폴더 명 :
-
-|| 추가되거나 변경되는 내용 :
-
-|| 다음 프로세스 혹은 건의사항에 대한 내용 :
-
-ex) 2019.4.1 || chanilkim || web || addFunctionsForOutput || I/O에 오류 대책이 필요
-
-
-################################################ --- DATE : 19.4.1 / 21 
-
+ImageCatcher의 욜로 weights 파일 링크 : https://drive.google.com/file/d/1VtA_F3o0rzksVS_Dj64nBlc2luKRCVX-/view?usp=sharing
+위치 : ImageCatcher/config
