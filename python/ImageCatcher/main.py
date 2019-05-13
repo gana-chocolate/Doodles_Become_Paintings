@@ -28,19 +28,23 @@ def removeExtensionFile(filePath, fileExtension):
 #https://www.google.com/search?q=[검색어]&source=lnms&tbm=isch&sa=X&dpr=2&sourch=Int&tbs=sur:fc
 #재사용가능 라이센스 구글 이미지 스크립트.
 
-## BBox 밖 cropping 하기
+##BBox 밖 cropping 하기
 
+
+###############################################################################
 google_crawler = GoogleImageCrawler(parser_threads=100, downloader_threads=100,
                                     storage={'root_dir': 'input/car'})
 
 filters = dict(license='commercial')
 
-google_crawler.crawl(keyword='car', filters=filters, max_num=10000,
+google_crawler.crawl(keyword='car', filters=filters, max_num=10,
                      min_size=(70,70), max_size=None)
 
 
 
 removeExtensionFile('input/car', '.gif')
+
+############################################################################### 이 부분 지우면 폴더 안에 것을 처리, 안지우면 위 조건에 따라 크롤되고 폴더 안에 것을 처리
 
 with tf.variable_scope('model'):
     print("Constructing computational graph...")
@@ -97,14 +101,18 @@ def label_bboxes(original_image, bbox, class_id, score):
     x1, y1, x2, y2 = resize_bbox_to_original(original_image, bbox)
     label = '{}: {}%'.format(classes[class_id], int(score*100))
 
-    cv2.rectangle(frame, (x1, y1), (x2, y2), colours[class_id], 2)
+    #cv2.rectangle(frame, (x1, y1), (x2, y2), colours[class_id], 2)
 
-    text_size, baseline = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.75, 2)
-    w, h = text_size
-    cv2.rectangle(frame, (x1, y1), (x1 + w, y1 - h), colours[class_id], cv2.FILLED)
+    #text_size, baseline = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.75, 2)
+    #w, h = text_size
+    #cv2.rectangle(frame, (x1, y1), (x1 + w, y1 - h), colours[class_id], cv2.FILLED)
 
-    cv2.putText(frame, label, (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 0), 2, cv2.LINE_AA)
-    return original_image
+    #cv2.putText(frame, label, (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 0), 2, cv2.LINE_AA)
+    width = x2-x1
+    height = y2-y1
+    img_trim = original_image[y1:y1+height, x1:x1+width]
+
+    return img_trim
 
 
 with tf.Session() as sess:
@@ -133,16 +141,16 @@ with tf.Session() as sess:
         for class_id, v in filtered_bboxes.items():
             for detection in v:
                 countBoxes = countBoxes + 1
-                #label_bboxes(frame, detection['bbox'], class_id, detection['score'])
+                label_bboxes(frame, detection['bbox'], class_id, detection['score'])
 
         for class_id, v in filtered_bboxes_re.items():
             for detection in v:
                 countBoxes_re = countBoxes_re + 1
-                #label_bboxes(frame, detection['bbox'], class_id, detection['score'])
+                label_bboxes(frame, detection['bbox'], class_id, detection['score'])
 
         if (countBoxes == 1) and (countBoxes_re == 1)and (2 in filtered_bboxes) :
 
-
+            frame = label_bboxes(frame, detection['bbox'], class_id, detection['score'])
            # print(str(countBoxes))
             now = time.time()
             print(filename + " processed " +str(now-before))
