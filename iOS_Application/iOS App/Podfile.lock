@@ -1,0 +1,75 @@
+PODS:
+  - Alamofire (4.8.2)
+  - AlamofireImage (3.5.2):
+    - Alamofire (~> 4.8)
+  - "Canvas+ (3.0.4)"
+  - Material (3.1.4):
+    - Material/Core (= 3.1.4)
+  - Material/Core (3.1.4):
+    - Motion (~> 3.1.0)
+  - Motion (3.1.1):
+    - Motion/Core (= 3.1.1)
+  - Motion/Core (3.1.1)
+  - ReactiveCocoa (10.0.0):
+    - ReactiveSwift (~> 6.0)
+  - ReactiveSwift (6.0.0)
+  - Realm (3.12.0):
+    - Realm/Headers (= 3.12.0)
+  - Realm/Headers (3.12.0)
+  - RealmSwift (3.12.0):
+    - Realm (= 3.12.0)
+  - REFormattedNumberField (1.1.6)
+  - RETableViewManager (1.7):
+    - REFormattedNumberField (~> 1.1.5)
+    - REValidation (~> 0.1.4)
+  - REValidation (0.1.4)
+  - SnapKit (4.0.1)
+  - ZJTableViewManager (0.2.5)
+
+DEPENDENCIES:
+  - Alamofire
+  - AlamofireImage
+  - "Canvas+"
+  - Material
+  - ReactiveCocoa
+  - RealmSwift (~> 3.12.0)
+  - RETableViewManager
+  - SnapKit (~> 4.0.0)
+  - ZJTableViewManager
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Alamofire
+    - AlamofireImage
+    - "Canvas+"
+    - Material
+    - Motion
+    - ReactiveCocoa
+    - ReactiveSwift
+    - Realm
+    - RealmSwift
+    - REFormattedNumberField
+    - RETableViewManager
+    - REValidation
+    - SnapKit
+    - ZJTableViewManager
+
+SPEC CHECKSUMS:
+  Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
+  AlamofireImage: 63cfe3baf1370be6c498149687cf6db3e3b00999
+  "Canvas+": d8e837ac72d0cb6f7a799bee0960757acc8f0da5
+  Material: 3622a0e18c8114e701b9d8509c3c4af28ed69ed8
+  Motion: f115b33f36cc52472a25a965daa89b3859817de0
+  ReactiveCocoa: 6d4c37ba236f5d9a7a55b2172cd09f19ba85f574
+  ReactiveSwift: 24b7ed245617bbfd30ee0c87779b6c64ac1b4518
+  Realm: cdaef23c4ddb36ab1ddffed23f5a7f3332fc5585
+  RealmSwift: 5576324033f0aa5ef1e0a839a3da2281dff47a7f
+  REFormattedNumberField: 70fc5fb1218ebd5ee9983820defd12806d5c6ec6
+  RETableViewManager: 0f24d796c42c0890d38c79cc9aeb3871e186726e
+  REValidation: 38c4de1be58455f8b00aab208ac80db316a66b7f
+  SnapKit: 0de968a9fec17499afa29683b05d0c775b6d1c29
+  ZJTableViewManager: 3bdb72306909cda77ed536651822ce80443644a6
+
+PODFILE CHECKSUM: 4299f19eac15ae4df4efaaf342f5995ca5f695a0
+
+COCOAPODS: 1.5.3

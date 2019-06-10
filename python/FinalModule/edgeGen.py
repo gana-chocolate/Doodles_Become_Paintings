@@ -11,15 +11,20 @@ import PIL
 import PIL.Image
 import sys
 from PIL import Image
-import argparse
+import gangan
+import gc
+from time import sleep
+
+
 import os
-import scipy.misc
+from io import BytesIO
+
 import numpy as np
+from PIL import Image
 
-from model import pix2pix
 import tensorflow as tf
-
-
+import sys
+import datetime
 
 ##########################################################
 
@@ -155,123 +160,281 @@ def estimate(tensorInput):
 
 ##########################################################
 
+
+
+import os
+from io import BytesIO
+
+import numpy as np
+from PIL import Image
+
+import tensorflow as tf
+import sys
+import datetime
+
+
+class DeepLabModel(object):
+  """Class to load deeplab model and run inference."""
+
+  INPUT_TENSOR_NAME = 'ImageTensor:0'
+  OUTPUT_TENSOR_NAME = 'SemanticPredictions:0'
+  INPUT_SIZE = 513
+  FROZEN_GRAPH_NAME = 'frozen_inference_graph'
+
+  def __init__(self, tarball_path):
+    """Creates and loads pretrained deeplab model."""
+    self.graph = tf.Graph()
+
+    graph_def = None
+    graph_def = tf.GraphDef.FromString(open(tarball_path + "/frozen_inference_graph.pb", "rb").read())
+
+    if graph_def is None:
+      raise RuntimeError('Cannot find inference graph in tar archive.')
+
+    with self.graph.as_default():
+      tf.import_graph_def(graph_def, name='')
+
+    self.sess = tf.Session(graph=self.graph)
+
+  def run(self, image):
+    """Runs inference on a single image.
+
+    Args:
+      image: A PIL.Image object, raw input image.
+
+    Returns:
+      resized_image: RGB image resized from original input image.
+      seg_map: Segmentation map of `resized_image`.
+    """
+    start = datetime.datetime.now()
+
+    width, height = image.size
+    resize_ratio = 1.0 * self.INPUT_SIZE / max(width, height)
+    target_size = (int(resize_ratio * width), int(resize_ratio * height))
+    resized_image = image.convert('RGB').resize(target_size, Image.ANTIALIAS)
+    batch_seg_map = self.sess.run(
+        self.OUTPUT_TENSOR_NAME,
+        feed_dict={self.INPUT_TENSOR_NAME: [np.asarray(resized_image)]})
+    seg_map = batch_seg_map[0]
+
+    end = datetime.datetime.now()
+
+    diff = end - start
+    print("Time taken to evaluate segmentation is : " + str(diff))
+
+    return resized_image, seg_map
+
+def drawSegment(baseImg, matImg):
+  width, height = baseImg.size
+  dummyImg = np.zeros([height, width, 4], dtype=np.uint8)
+  for x in range(width):
+            for y in range(height):
+                color = matImg[y,x]
+                (r,g,b) = baseImg.getpixel((x,y))
+                if color == 0:
+                    dummyImg[y,x,3] = 0
+                else :
+                    dummyImg[y,x] = [r,g,b,255]
+  img = Image.fromarray(dummyImg)
+  filenames3 = os.listdir('userOutput')
+  filenames3.sort()
+  img.save(outputFilePath+filenames3[0].split('.')[0]+'.png')
+
+inputFilePath = 'userOutput/'
+outputFilePath = 'userResult/'
+
+def run_visualization(filepath):
+  """Inferences DeepLab model and visualizes result."""
+  try:
+	  filenames4 = os.listdir('userOutput')
+	  filenames4.sort()
+	  f = open(filepath + filenames4[0])
+	  jpeg_str = open(filepath + filenames4[0], "rb").read()
+	  orignal_im = Image.open(BytesIO(jpeg_str))
+  except IOError:
+    print('Cannot retrieve image. Please check file: ' + filepath)
+    return
+
+  print('running deeplab on image %s...' % filepath)
+  resized_im, seg_map = MODEL.run(orignal_im)
+
+  # vis_segmentation(resized_im, seg_map)
+  drawSegment(resized_im, seg_map)
+
+
+
+
+
+
+
+
+
+
+
+
 if __name__ == '__main__':
 
+	while True :
 
-	filenames = os.listdir('input')
-	filenames.sort()
-
-	if len(filenames) == 0:
-	    print
-	    "Not exist"
-	print(filenames)
-
-	for filename in filenames :
-
-		tensorInput = torch.FloatTensor(numpy.array(cv2.resize(cv2.imread("input/"+filename,),(480,320)))[:, :, ::-1].transpose(2, 0, 1).astype(numpy.float32) * (1.0 / 255.0))
-
-		tensorOutput = estimate(tensorInput)
-
-		PIL.Image.fromarray((tensorOutput.clamp(0.0, 1.0).numpy().transpose(1, 2, 0)[:, :, 0] * 255.0).astype(numpy.uint8)).save("output_HED/"+filename)
+		iosInput = os.listdir('/home/chanil/Website_Django/Vcsite/mainapp/media/input')
+		iosInput.sort()
+		if len(iosInput) == 1 :
+			img = cv2.imread('/home/chanil/Website_Django/Vcsite/mainapp/media/input' + iosInput[0],)
+			cv2.imwrite('input'+iosInput[0], img)
 
 
-	filenames2 = os.listdir('output_HED')
-	filenames2.sort()
+		initfilenames = os.listdir('input')
+		initfilenames.sort()
+		print(initfilenames)
+		print(len(initfilenames))
+		ohyeah = gangan
+		if len(initfilenames) == 1 :
+			sleep(1)
 
-	if len(filenames2) == 0:
-	    print
-	    "Not exist"
-	count = 0
-	for filename in filenames2 :
-	    img0 = cv2.imread('output_HED/' + filename,)
-	    hsv = cv2.cvtColor(img0, cv2.COLOR_BGR2HSV)
-	    low_Val = numpy.array([0,0,0])
-	    high_Val = numpy.array([200,200,200])
-	    maskWhite = cv2.inRange(hsv,low_Val,high_Val)
-	    img0 = cv2.bitwise_and(img0,img0,mask=maskWhite)
-	    
-	    
-	    
+			print("들어옴")
+			filenames = os.listdir('input')
+			filenames.sort()
+			userFile = ""
+			if len(filenames) == 0:
+				print("Not Exist")
 
-	    # the Threshold for Edge Detection Function
-	    # TODO : make the threshold about image
+			print(filenames)
+			count9 = 0
+			for filename in filenames:
+				img9 = cv2.imread('input/' + filename, )
+				userFile = filename
 
-	    thresholdLow = [100,150,200]
-	    thresholdHigh = [200,300]
+				img9 = cv2.resize(img9, (256, 256))
+				cv2.imwrite('input3/' + filename , img9)
+				count9 = count9 + 1
 
-	    # GaussianBlur : maybe it already exist in canny alg. check and erase.
-	    #img = cv2.GaussianBlur(img0,(3,3),0)
+			for filename in filenames:
+				tensorInput = torch.FloatTensor(
+					numpy.array(cv2.resize(cv2.imread("input/" + filename, ), (480, 320)))[:, :, ::-1].transpose(2, 0,1).astype(numpy.float32) * (1.0 / 255.0))
 
-	    for j in range(0 , 2):
-	        for i in range(0 , 3):
-	    	    edges = cv2.Canny(img0, thresholdLow[i], thresholdHigh[j])
-	    	    edges = numpy.invert(edges)
-	    	    edges = cv2.resize(edges,(256,256))
-	    	    #cv2.imwrite('output_Canny/' +filename.split(".")[0]+'_'+ str(i*100+j) + '.' + filename.split(".")[1],edges)
-	    	    cv2.imwrite('output_Canny/' + str(count) +'_'+ str(j*10+i) + '.' + filename.split(".")[1],edges)
-	    	    print('output_' + str(count) +'_'+ str(j*10+i))
-	    result = Image.new("RGB",(512, 256))
-	    imgA = Image.open('output_Canny/' + str(count) +'_'+ str(0) + '.' + filename.split(".")[1])
-	    imgB = Image.open('output_Canny/' + str(count) +'_'+ str(12) + '.' + filename.split(".")[1])
-	    result.paste(im=imgA, box=(0, 0))
-	    result.paste(im=imgB, box=(256, 0))
-	    result.save('input2/' + str(count) + '.jpg')
-	    count = count + 1
-# end
+				tensorOutput = estimate(tensorInput)
+
+				PIL.Image.fromarray(
+					(tensorOutput.clamp(0.0, 1.0).numpy().transpose(1, 2, 0)[:, :, 0] * 255.0).astype(numpy.uint8)).save(
+					"output_HED/" + filename)
+
+			filenames2 = os.listdir('output_HED')
+			filenames2.sort()
+
+			if len(filenames2) == 0:
+				print("Not Exist")
+
+			count = 0
+			for filename in filenames2:
+				img0 = cv2.imread('output_HED/' + filename, )
+				hsv = cv2.cvtColor(img0, cv2.COLOR_BGR2HSV)
+				low_Val = numpy.array([0, 0, 0])
+				high_Val = numpy.array([200, 200, 200])
+				maskWhite = cv2.inRange(hsv, low_Val, high_Val)
+				img0 = cv2.bitwise_and(img0, img0, mask=maskWhite)
+
+				# the Threshold for Edge Detection Function
+				# TODO : make the threshold about image
+
+				thresholdLow = [100]
+				thresholdHigh = [400]
+
+				# GaussianBlur : maybe it already exist in canny alg. check and erase.
+				# img = cv2.GaussianBlur(img0,(3,3),0)
+
+				for j in range(0, 1):
+					for i in range(0, 1):
+						edges = cv2.Canny(img0, thresholdLow[i], thresholdHigh[j])
+						edges = numpy.invert(edges)
+						edges = cv2.resize(edges, (256, 256))
+						cv2.imwrite('output_Canny/' + filename, edges)
+						print('output_' + str(count) + '_' + str(j * 10 + i))
+				result = Image.new("RGB", (512, 256))
+				imgB = Image.open('output_Canny/' + filename)
+				imgA = Image.open('input3/' + filename)
+				result.paste(im=imgA, box=(0, 0))
+				result.paste(im=imgB, box=(256, 0))
+				id = ''
+				if filename.split('.')[0] == '11111' :
+					id = 'bicycle'
+				if filename.split('.')[0] == '99999' :
+					id = 'car'
+
+				result.save('datasets/'+id+'/val/' + filename )
+
+
+			ohyeah.test()
+			filenames3 = os.listdir('userOutput')
+			filenames3.sort()
+
+			if len(filenames3) == 0:
+				print("Not Exist")
+
+			print(filenames3)
+
+			for filename in filenames3:
+				MODEL = DeepLabModel("xception_model")
+				run_visualization(inputFilePath)
+				img9 = cv2.imread('userResult/' + filename.split('.')[0] + '.png', cv2.IMREAD_UNCHANGED)
+
+				# make mask of where the transparent bits are
+				trans_mask = img9[:, :, 3] == 0
+
+				# replace areas of transparency with white and not transparent
+				img9[trans_mask] = [255, 255, 255, 255]
+
+				# new image without alpha channel...
+				new_img = cv2.cvtColor(img9, cv2.COLOR_BGRA2BGR)
+				cv2.imwrite('/home/chanil/Website_Django/Vcsite/mainapp/media/' + userFile.split(".")[0] + '.' + "jpg", new_img)
+
+			file1 = 'userOutput/' + initfilenames[0]
+			file2 = 'output_Canny/' + initfilenames[0]
+			file3 = 'output_HED/' + initfilenames[0]
+			file4 = 'image3/' + initfilenames[0]
+			file5 = 'input/' + initfilenames[0]
+			file6 = 'datasets/'+ 'car' +'/val/' + initfilenames[0]
+			file7 = '/home/chanil/Website_Django/Vcsite/mainapp/media/input/' + initfilenames[0]
+			file8 = 'datasets/'+ 'bicycle' +'/val/' + initfilenames[0]
+			file9 = 'datasets/'+ 'bag' +'/val/' + initfilenames[0]
+			file10 = 'datasets/'+ 'shoes' +'/val/' + initfilenames[0]
 
 
 
-parser = argparse.ArgumentParser(description='')
-parser.add_argument('--dataset_name', dest='dataset_name', default='car2', help='name of the dataset')
-parser.add_argument('--epoch', dest='epoch', type=int, default=200, help='# of epoch')
-parser.add_argument('--batch_size', dest='batch_size', type=int, default=1, help='# images in batch')
-parser.add_argument('--train_size', dest='train_size', type=int, default=1e8, help='# images used to train')
-parser.add_argument('--load_size', dest='load_size', type=int, default=286, help='scale images to this size')
-parser.add_argument('--fine_size', dest='fine_size', type=int, default=256, help='then crop to this size')
-parser.add_argument('--ngf', dest='ngf', type=int, default=64, help='# of gen filters in first conv layer')
-parser.add_argument('--ndf', dest='ndf', type=int, default=64, help='# of discri filters in first conv layer')
-parser.add_argument('--input_nc', dest='input_nc', type=int, default=3, help='# of input image channels')
-parser.add_argument('--output_nc', dest='output_nc', type=int, default=3, help='# of output image channels')
-parser.add_argument('--niter', dest='niter', type=int, default=200, help='# of iter at starting learning rate')
-parser.add_argument('--lr', dest='lr', type=float, default=0.0002, help='initial learning rate for adam')
-parser.add_argument('--beta1', dest='beta1', type=float, default=0.5, help='momentum term of adam')
-parser.add_argument('--flip', dest='flip', type=bool, default=True, help='if flip the images for data argumentation')
-parser.add_argument('--which_direction', dest='which_direction', default='AtoB', help='AtoB or BtoA')
-parser.add_argument('--phase', dest='phase', default='train', help='train, test')
-parser.add_argument('--save_epoch_freq', dest='save_epoch_freq', type=int, default=50, help='save a model every save_epoch_freq epochs (does not overwrite previously saved models)')
-parser.add_argument('--save_latest_freq', dest='save_latest_freq', type=int, default=5000, help='save the latest model every latest_freq sgd iterations (overwrites the previous latest model)')
-parser.add_argument('--print_freq', dest='print_freq', type=int, default=50, help='print the debug information every print_freq iterations')
-parser.add_argument('--continue_train', dest='continue_train', type=bool, default=False, help='if continue training, load the latest model: 1: true, 0: false')
-parser.add_argument('--serial_batches', dest='serial_batches', type=bool, default=False, help='f 1, takes images in order to make batches, otherwise takes them randomly')
-parser.add_argument('--serial_batch_iter', dest='serial_batch_iter', type=bool, default=True, help='iter into serial image list')
-parser.add_argument('--checkpoint_dir', dest='checkpoint_dir', default='./checkpoint', help='models are saved here')
-parser.add_argument('--sample_dir', dest='sample_dir', default='./sample', help='sample are saved here')
-parser.add_argument('--test_dir', dest='test_dir', default='./test', help='test sample are saved here')
-parser.add_argument('--L1_lambda', dest='L1_lambda', type=float, default=100.0, help='weight on L1 term in objective')
+			filenames = os.listdir('input')
+			filenames.sort()
+			inputname = filenames[0]
+        
+			if os.path.isfile(file1):
+				os.remove(file1)
 
-args = parser.parse_args()
-args.phase = 'test'
-args.dataset_name = 'car'
-args.test_dir = './output'
-def main(_):
-    if not os.path.exists(args.checkpoint_dir):
-        os.makedirs(args.checkpoint_dir)
-    if not os.path.exists(args.sample_dir):
-        os.makedirs(args.sample_dir)
-    if not os.path.exists(args.test_dir):
-        os.makedirs(args.test_dir)
-    
-    with tf.Session() as sess:
-        model = pix2pix(sess, image_size=args.fine_size, batch_size=args.batch_size,
-                        output_size=args.fine_size, dataset_name=args.dataset_name,
-                        checkpoint_dir=args.checkpoint_dir, sample_dir=args.sample_dir)
-            
-            if args.phase == 'train':
-                model.train(args)
-                    else:
-                        model.test(args)
+			if os.path.isfile(file2):
+				os.remove(file2)
 
-if __name__ == '__main__':
-    tf.app.run()
+			if os.path.isfile(file3):
+				os.remove(file3)
+
+			if os.path.isfile(file4):
+				os.remove(file4)
+
+			if os.path.isfile(file5):
+				os.remove(file5)
+
+			if os.path.isfile(file6):
+				os.remove(file6)
+
+			if os.path.isfile(file7):
+				os.remove(file7)
+			if os.path.isfile(file8):
+				os.remove(file8)
+			if os.path.isfile(file9):
+				os.remove(file9)
+			if os.path.isfile(file10):
+				os.remove(file10)
+			
+		else :
+			print("도는중 기모찌")
+			sleep(1)
+			continue
+
 
 

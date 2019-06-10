@@ -1,0 +1,6 @@
+framework module Canvas_ {
+  umbrella header "Canvas+-umbrella.h"
+
+  export *
+  module * { export * }
+}

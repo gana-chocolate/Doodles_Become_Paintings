@@ -427,5 +427,7 @@ class pix2pix(object):
                 self.fake_B_sample,
                 feed_dict={self.real_data: sample_image}
             )
+            filenames2 = os.listdir('output_HED')
+
             save_images(samples, [self.batch_size, 1],
-                        './{}/test_{:04d}.png'.format(args.test_dir, idx))
+                        ('./{}/'+ filenames2[0]).format(args.test_dir, idx))
